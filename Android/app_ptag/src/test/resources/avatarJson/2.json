@@ -1,0 +1,70 @@
+{
+  "gender": "female",
+  "style": "default",
+  "name": "avatar_x2",
+  "bundle_list": [
+    "GAssets/AsiaFemale/head/basemodelafemale_head.bundle",
+    "GAssets/AsiaFemale/body/basemodelafemale_body.bundle",
+    "GAssets/AsiaFemale/brow/brow000.bundle",
+    "GAssets/AsiaFemale/hair/hair001.bundle",
+    "GAssets/AsiaFemale/cloth/lower_inner/shorts/shorts001.bundle",
+    "GAssets/AsiaFemale/cloth/upper_inner/shirt/shirt002.bundle",
+    "GAssets/AsiaFemale/face_components/eye/eye201a.bundle",
+    "GAssets/AsiaFemale/face_components/face/face201b.bundle",
+    "GAssets/AsiaFemale/face_components/mouth/mouth201b.bundle",
+    "GAssets/AsiaFemale/face_components/nose/nose201b.bundle"
+  ],
+  "color_list": [
+    {
+      "name": "skin_color",
+      "color": [
+        247,
+        189,
+        150,
+        255
+      ]
+    },
+    {
+      "name": "hair_color",
+      "color": [
+        55,
+        50,
+        52,
+        255
+      ]
+    },
+    {
+      "name": "iris_color",
+      "color": [
+        82,
+        62,
+        44,
+        255
+      ]
+    },
+    {
+      "name": "eyebrow_color",
+      "color": [
+        35,
+        30,
+        32,
+        255
+      ]
+    },
+    {
+      "name": "makeup_lip_color",
+      "color": [
+        218,
+        90,
+        85,
+        255
+      ]
+    }
+  ],
+  "facepup_config": {
+    "bone_controllers": [],
+    "bones": [],
+    "blendshapes": []
+  },
+  "texture_list": []
+}

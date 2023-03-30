@@ -1,0 +1,6 @@
+/build
+**/android/.gradle
+.DS_Store
+local.properties
+.idea
+authpack.java

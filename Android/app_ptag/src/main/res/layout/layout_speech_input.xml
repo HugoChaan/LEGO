@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <FrameLayout
+        android:id="@+id/input_text_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:paddingVertical="10dp"
+        android:background="#ffffff"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/switch_audio_btn"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/icon_voice_nor"
+            />
+
+        <EditText
+            android:id="@+id/input_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginEnd="16dp"
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="16dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/bg_speech_input_edit_text"
+            android:hint="请输入"
+            android:imeOptions="actionNext"
+            android:inputType="textMultiLine"
+            android:minLines="1"
+            android:textColor="#222326"
+            android:textColorHint="#A7AABF"
+            />
+
+
+        <TextView
+            android:id="@+id/input_text_send_btn"
+            android:layout_width="52dp"
+            android:layout_height="28dp"
+            android:background="@drawable/bg_speech_input_send_text"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="24dp"
+            android:gravity="center"
+            android:text="发送"
+            android:textColor="#FFF"
+            />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/input_audio_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:paddingVertical="10dp"
+        android:visibility="visible"
+        >
+        <ImageView
+            android:id="@+id/switch_text_btn"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/icon_keyboard_nor"
+            />
+
+        <TextView
+            android:id="@+id/input_audio_render_btn"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_speech_input_audio_normal"
+            android:text="按住说话"
+            android:textColor="#27272B"
+            android:textSize="14sp"
+            />
+
+    </FrameLayout>
+
+</FrameLayout>

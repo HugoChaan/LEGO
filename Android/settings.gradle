@@ -1,0 +1,4 @@
+rootProject.name = "FUAvatarAndroidPublic"
+
+include ':app_ptag'
+include ':convert-client'

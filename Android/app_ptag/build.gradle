@@ -1,0 +1,143 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
+def isSigningEnabled = true
+
+android {
+    compileSdkVersion build_versions.compile_sdk
+    buildToolsVersion build_versions.build_tools
+
+    defaultConfig {
+        applicationId "com.faceunity.app_ptag"
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode 75
+        versionName "1.7.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        def properties = new Properties()
+        def inputSteam = project.rootProject.file('local.properties').newDataInputStream()
+        properties.load(inputSteam)
+
+
+        if(properties.getProperty('StoreFile') != null) {
+            isSigningEnabled = true
+            config {
+                storeFile file(properties.getProperty('StoreFile'))
+                storePassword properties.getProperty('StorePassword')
+                keyAlias properties.getProperty('KeyAlias')
+                keyPassword properties.getProperty('KeyPassword')
+            }
+        } else {
+            isSigningEnabled = false
+        }
+
+
+    }
+
+    buildTypes {
+        debug {
+            if (isSigningEnabled) {
+                signingConfig signingConfigs.config
+            }
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (isSigningEnabled) {
+                signingConfig signingConfigs.config
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        viewBinding true
+    }
+
+    applicationVariants.all {
+        variant ->
+            variant.outputs.all {
+                outputFileName = "AvatarX-${gitBranchName.call()}-V${defaultConfig.versionName}.apk"
+            }
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0,'seconds'
+    resolutionStrategy.cacheDynamicVersionsFor 0,'seconds'
+}
+
+dependencies {
+    api deps.kotlin
+    api deps.support.app_compat
+    api deps.support.design
+    api deps.support.recyclerview
+
+    api deps.faceUnity.core
+    api deps.faceUnity.factory
+    api deps.faceUnity.toolbox
+    api deps.faceUnity.download
+    api deps.faceUnity.sta
+    api deps.faceUnity.vta
+    api deps.kotlin
+    api deps.kotlin_core
+    api deps.kotlin_coroutines
+    api deps.support.app_compat
+    api deps.support.design
+    api deps.support.recyclerview
+    api deps.glide
+    api deps.gson
+    api 'com.squareup.okhttp3:okhttp:4.9.0'
+    api 'com.squareup.okhttp3:logging-interceptor:4.9.0'
+
+    def nav_version = "2.3.5"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.7.0'
+    implementation ("io.socket:socket.io-client:2.0.1") {
+        exclude group: 'org.json', module: 'json'
+    }
+
+    def koin_version= "3.1.6"
+    implementation "io.insert-koin:koin-core:$koin_version"
+    implementation "io.insert-koin:koin-android:$koin_version"
+
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'com.tencent.bugly:crashreport:latest.release'
+    implementation 'com.google.zxing:core:3.3.3'
+    implementation 'com.tencent.tav:libpag:4.0.5.82'
+
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+
+
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
+    testImplementation "io.insert-koin:koin-test:$koin_version"
+    testImplementation "io.insert-koin:koin-test-junit4:$koin_version"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.kotlin_coroutines_version"
+    testImplementation 'org.json:json:20190722'
+    testImplementation "org.mockito:mockito-inline:4.0.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+
+    implementation project(path: ':convert-client')
+}

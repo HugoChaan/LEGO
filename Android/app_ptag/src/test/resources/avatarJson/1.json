@@ -1,0 +1,79 @@
+{
+  "gender": "male",
+  "style": "default",
+  "name": "avatar_x1",
+  "bundle_list": [
+    "GAssets/AsiaMale/head/BaseModelAmale_head.bundle",
+    "GAssets/AsiaMale/body/BaseModelAmale_body.bundle",
+    "GAssets/AsiaMale/brow/brow000.bundle",
+    "GAssets/AsiaMale/hair/hair001.bundle",
+    "GAssets/AsiaMale/cloth/lower_inner/shorts/shorts001.bundle",
+    "GAssets/AsiaMale/cloth/upper_inner/shirt/shirt003.bundle",
+    "GAssets/AsiaMale/face_components/eye/eye201a.bundle",
+    "GAssets/AsiaMale/face_components/face/face201b.bundle",
+    "GAssets/AsiaMale/face_components/mouth/mouth201a.bundle",
+    "GAssets/AsiaMale/face_components/nose/nose201b.bundle"
+  ],
+  "color_list": [
+    {
+      "name": "skin_color",
+      "color": [
+        234,
+        181,
+        144,
+        255
+      ]
+    },
+    {
+      "name": "hair_color",
+      "color": [
+        55,
+        50,
+        52,
+        255
+      ]
+    },
+    {
+      "name": "iris_color",
+      "color": [
+        121,
+        47,
+        16,
+        255
+      ]
+    },
+    {
+      "name": "beard_color",
+      "color": [
+        118,
+        62,
+        38,
+        255
+      ]
+    },
+    {
+      "name": "eyebrow_color",
+      "color": [
+        35,
+        30,
+        32,
+        255
+      ]
+    },
+    {
+      "name": "makeup_lip_color",
+      "color": [
+        219,
+        149,
+        135,
+        255
+      ]
+    }
+  ],
+  "facepup_config": {
+    "bone_controllers": [],
+    "bones": [],
+    "blendshapes": []
+  },
+  "texture_list": []
+}

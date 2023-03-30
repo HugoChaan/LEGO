@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/body_follow_mode_layout"
+    style="@style/fu_demo_edit_setting_bottom_sheet_list_view"
+    >
+    <TextView
+        android:id="@+id/title"
+        style="@style/fu_demo_edit_setting_bottom_sheet_list_text"
+        tools:text="标题"
+        />
+    <ImageView
+        android:id="@+id/arrow_icon"
+        style="@style/fu_demo_edit_setting_bottom_sheet_list_function_view"
+        android:src="@drawable/icon_currency_arrow"
+        />
+
+    <TextView
+        android:id="@+id/desc"
+        style="@style/fu_demo_edit_setting_bottom_sheet_list_function_text"
+        android:layout_toStartOf="@id/arrow_icon"
+        tools:text="说明" />
+
+    <ImageView
+        android:id="@+id/switch_btn"
+        style="@style/fu_demo_edit_setting_bottom_sheet_list_function_view"
+        android:src="@drawable/btn_switch_on"
+        android:visibility="gone"
+        />
+</RelativeLayout>

@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import com.faceunity.app_ptag.util.ToastUtils
 import com.faceunity.editor_ptag.util.getColorCompat
 import com.faceunity.editor_ptag.util.tintBarColor

@@ -1,9 +1,13 @@
 package com.agora.gpt;
 
+import static io.agora.rtc2.video.VideoCanvas.RENDER_MODE_FIT;
+import static io.agora.rtc2.video.VideoCanvas.RENDER_MODE_HIDDEN;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.view.TextureView;
 import android.view.WindowManager;
 
 import androidx.fragment.app.FragmentActivity;
@@ -11,23 +15,29 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
+import com.google.gson.JsonObject;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import org.json.JSONObject;
+
 import java.lang.ref.WeakReference;
+import java.util.Random;
 
 import io.agora.hy.extension.ExtensionManager;
 import io.agora.rtc2.Constants;
+import io.agora.rtc2.DataStreamConfig;
 import io.agora.rtc2.IMediaExtensionObserver;
 import io.agora.rtc2.IRtcEngineEventHandler;
 import io.agora.rtc2.RtcEngine;
 import io.agora.rtc2.RtcEngineConfig;
+import io.agora.rtc2.video.VideoCanvas;
 import io.agora.rtc2.video.VideoEncoderConfiguration;
 import io.reactivex.disposables.Disposable;
 
 class Voice2TextManager implements LifecycleObserver {
-    private static final String appId = BuildConfig.agora_appid;
+    private static final String appId = "6bb480f77c6c458696eadb61dfc6fb76";
     private final String TAG = getClass().getSimpleName();
-    private final static String channelName = "agora_extension";
+    private final static String channelName = "agora_extension1";
     private RtcEngine mRtcEngine;
     private Context mContext;
     private boolean isInited = false;
@@ -43,6 +53,12 @@ class Voice2TextManager implements LifecycleObserver {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+    private int streamId = 0;
+
+    private RtcListener mRtcListener;
+    public void setRtcListener(RtcListener listen) {
+        this.mRtcListener = listen;
+    }
 
     private final IMediaExtensionObserver mMediaExtensionObserver = new IMediaExtensionObserver() {
         @Override
@@ -145,11 +161,30 @@ class Voice2TextManager implements LifecycleObserver {
             config.mEventHandler = new IRtcEngineEventHandler() {
                 @Override
                 public void onJoinChannelSuccess(String s, int i, int i1) {
-                    Log.d(TAG, "onJoinChannelSuccess");
+                    Log.d("LEGO", "mRtcEngine onJoinChannelSuccess");
+                    mRtcListener.onJoinChannelSuccess(s, i, i1);
+                    mRtcEngine.adjustPlaybackSignalVolume(0);
                 }
 
+                @Override
+                public void onStreamMessage(int uid, int streamId, byte[] data) {
+                    Log.d("LEGO", "onStreamMessage");
+                    mRtcListener.onStreamMessage(uid, streamId, data);
+                }
+
+                @Override
+                public void onUserJoined(int uid, int elapsed) {
+                    Log.d("LEGO", "onUserJoined");
+                    mRtcListener.onUserJoined(uid, elapsed);
+                }
             };
             mRtcEngine = RtcEngine.create(config);
+            mRtcEngine.setParameters("{\"che.audio.ains_mode\":2}");
+            mRtcEngine.setParameters("{\"che.audio.nsng.lowerBound\":10}");
+            mRtcEngine.setParameters("{\"che.audio.nsng.lowerMask\":10}");
+            mRtcEngine.setParameters("{\"che.audio.nsng.statisticalbound\":0}");
+            mRtcEngine.setParameters("{\"che.audio.nsng.finallowermask\":8}");
+            mRtcEngine.setParameters("{\"che.audio.nsng.enhfactorstastical\":200}");
             mRtcEngine.enableExtension(ExtensionManager.EXTENSION_VENDOR_NAME,
                     ExtensionManager.EXTENSION_AUDIO_FILTER_NAME, true);
             // // 设置logcat日志等级
@@ -176,12 +211,17 @@ class Voice2TextManager implements LifecycleObserver {
             // // 试验48k双声道
             // mRtcEngine.setAudioProfile(Constants.AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO);
             mRtcEngine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER);
-            //mRtcEngine.enableLocalVideo(true);
-            //mRtcEngine.enableVideo();
+            mRtcEngine.enableLocalVideo(true);
+            mRtcEngine.enableVideo();
             mRtcEngine.enableAudio();
             Log.d(TAG, "api call join channel");
-            mRtcEngine.joinChannel("", channelName, "", 0);
-            //mRtcEngine.startPreview();
+
+            DataStreamConfig dataStreamConfig = new DataStreamConfig();
+            dataStreamConfig.ordered = false;
+            dataStreamConfig.syncWithAudio = false;
+            streamId = mRtcEngine.createDataStream(dataStreamConfig);
+
+            mRtcEngine.startPreview();
 
             mHyUtil = new HyUtil(mHyUtilListener, mRtcEngine);
             mParamWraps = mHyUtil.getParamWraps();
@@ -192,6 +232,36 @@ class Voice2TextManager implements LifecycleObserver {
             }
         } catch (Exception e) {
             Log.e(TAG, "initAgoraEngine | fail", e);
+        }
+    }
+
+    public void joinChannel(String channelName) {
+        mRtcEngine.joinChannel(appId, channelName, "", new Random().nextInt(1000000) + 10000);
+        mRtcEngine.enableExtension(ExtensionManager.EXTENSION_VENDOR_NAME,
+                ExtensionManager.EXTENSION_AUDIO_FILTER_NAME, false);
+    }
+
+    public void leaveChannel() {
+        mRtcEngine.leaveChannel();
+    }
+
+    public void enableSTT(boolean enable) {
+        mRtcEngine.enableExtension(ExtensionManager.EXTENSION_VENDOR_NAME,
+                ExtensionManager.EXTENSION_AUDIO_FILTER_NAME, enable);
+    }
+
+    public void enableLocalView(TextureView view) {
+        mRtcEngine.setupLocalVideo(new VideoCanvas(view));
+    }
+
+    public void enableRemoteView(TextureView view, int remoteUid) {
+        mRtcEngine.setupRemoteVideo(new VideoCanvas(view, RENDER_MODE_HIDDEN, remoteUid));
+    }
+
+    public void sendStreamMessage(JSONObject jsonMsg) {
+        int ret = mRtcEngine.sendStreamMessage(streamId, jsonMsg.toString().getBytes());
+        if (ret < 0) {
+            Log.e(TAG, "sendStreamMessage | fail: "+ ret);
         }
     }
 
@@ -219,5 +289,9 @@ class Voice2TextManager implements LifecycleObserver {
 
     public void stopListening() {
         mHyUtil.stop();
+    }
+
+    public void flushListening() {
+        mHyUtil.flush();
     }
 }

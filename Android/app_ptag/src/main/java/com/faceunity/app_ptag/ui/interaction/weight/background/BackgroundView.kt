@@ -88,8 +88,10 @@ class BackgroundView@JvmOverloads constructor(
     fun fillData(data: List<String>) {
         imagePathList.clear()
         imagePathList.add(BackgroundSource.Add(R.drawable.icon_drawer_add))
-        val default = BackgroundSource.Default(R.drawable.interaction_bg1)
-        imagePathList.add(default)
+        val default1 = BackgroundSource.Default(R.drawable.interaction_bg1)
+        val default2 = BackgroundSource.Default(R.mipmap.background)
+        imagePathList.add(default1)
+        imagePathList.add(default2)
         imagePathList.addAll(data.map { BackgroundSource.User(it) })
         binding.backgroundRecyclerView.adapter?.notifyDataSetChanged()
     }

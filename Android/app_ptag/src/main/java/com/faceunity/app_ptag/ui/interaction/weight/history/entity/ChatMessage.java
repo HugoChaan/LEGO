@@ -11,6 +11,7 @@ import java.util.Date;
  * @author Richie on 2019.03.27
  */
 public class ChatMessage {
+    public static final int FROM_USER_TO_GPT = -1;
     public static final int FROM_NLP = 0;
     public static final int FROM_USER = 1;
     public static final int CHAT_TIME = 2;

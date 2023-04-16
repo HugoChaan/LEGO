@@ -9,4 +9,10 @@ public interface ConvertListener {
     void onQues2AnsSuccess(int index,String question, String answer);
 
     void onFailure(int errorCode, String message);
+
+    void onJoinChannelSuccess(String channel, int uid, int elapsed);
+
+    void onStreamMessage(int uid, int streamId, byte[] data);
+
+    void onUserJoined(int uid, int elapsed);
 }

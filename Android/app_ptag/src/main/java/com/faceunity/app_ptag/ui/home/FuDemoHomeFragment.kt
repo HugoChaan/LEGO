@@ -32,6 +32,7 @@ import com.faceunity.app_ptag.util.ToastUtils
 import com.faceunity.app_ptag.util.expand.format
 import com.faceunity.app_ptag.view_model.FuAvatarManagerViewModel
 import com.faceunity.app_ptag.view_model.FuPreviewViewModel
+import com.faceunity.app_ptag.view_model.FuStaViewModel
 import com.faceunity.app_ptag.weight.DownloadingDialog
 import com.faceunity.app_ptag.weight.FuDemoRetryDialog
 import com.faceunity.app_ptag.weight.avatar_manager.AvatarManagerDialog
@@ -56,6 +57,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.math.absoluteValue
 
 
 /**
@@ -98,6 +100,9 @@ class FuDemoHomeFragment : Fragment() {
         subscribeUi()
         setAvatarLoadListener()
 
+        fuStaViewModel.initSTARender()
+        fuStaViewModel.initSTAServer()
+
         loadAvatarId = arguments?.getString("avatarId")?.ifBlank { null }
         viewModel.initCloud()
         loadAvatarId?.run {
@@ -115,6 +120,9 @@ class FuDemoHomeFragment : Fragment() {
     }
 
     private fun initView() {
+        binding.buildAvatarBtn.setOnClickListener {
+           findNavController().navigate(R.id.buildFragment)
+        }
         binding.glTextureView.apply {
             isOpaque = false
         }
@@ -123,23 +131,23 @@ class FuDemoHomeFragment : Fragment() {
                 private var lastDeltaX = 0f
 
                 override fun onScale(scale: Float) {
-//                    fuPreviewViewModel.scaleAvatar(scale)
+                    fuPreviewViewModel.scaleAvatar(scale)
                 }
 
                 override fun onMove(deltaX: Float, deltaY: Float) {
                     lastDeltaX = deltaX
                     fuPreviewViewModel.rotateAvatar(deltaX * (binding.glTextureView.width))
                     fuPreviewViewModel.cancelRollAvatar()
-//                    fuPreviewViewModel.moveVerticalAvatar(-deltaY) //Android 与 OpenGL 坐标系上下相反，故为负
+                    fuPreviewViewModel.moveVerticalAvatar(-deltaY) //Android 与 OpenGL 坐标系上下相反，故为负
                 }
 
                 override fun onClick() {
                 }
 
                 override fun onUp() {
-//                    if (lastDeltaX.absoluteValue > 0.001) { //如果手势离开屏幕时高于一定的速度,则触发惯性滚动
-//                        fuPreviewViewModel.rollAvatar(lastDeltaX)
-//                    }
+                    if (lastDeltaX.absoluteValue > 0.001) { //如果手势离开屏幕时高于一定的速度,则触发惯性滚动
+                        fuPreviewViewModel.rollAvatar(lastDeltaX)
+                    }
                 }
             })
         }
@@ -150,47 +158,9 @@ class FuDemoHomeFragment : Fragment() {
         binding.editAvatarBtn.setOnClickListener {
             findNavController().navigate(R.id.editFragment)
         }
-        binding.buildAvatarBtn.setOnClickListener {
-            findNavController().navigate(R.id.buildFragment)
-        }
-        binding.driveBtn.setOnClickListener {
-            findNavController().navigate(R.id.driveFragment)
-        }
         binding.interactionBtn.setOnClickListener {
             findNavController().navigate(R.id.interactionFragment)
         }
-        binding.savePhotoBtn.setOnClickListener {
-            if (!isAvatarShow) {
-                ToastUtils.showFailureToast(requireContext(), "请等待 Avatar 加载完成")
-                return@setOnClickListener
-            }
-            saveSnapShotToFile()
-        }
-        binding.scanBtn.setOnClickListener {
-            findNavController().navigate(R.id.scanCodeFragment)
-        }
-        if (IDevBuilderInstance.enableDevConfig()) {
-            binding.savePhotoBtn.setOnLongClickListener {
-                binding.devSettingBtn.visibleOrGone(!binding.devSettingBtn.isVisible())
-                true
-            }
-            val randomAvatarDevMenu = DevSetting.buildClick("随机 Avatar")
-            {
-                IDevBuilderInstance.buildRandomAvatar(lifecycleScope, requireContext(), downloadingDialog, fuAvatarManagerViewModel)
-            }
-
-            binding.devSettingBtn.apply {
-                val devSettingDialog = DevSettingDialog(requireContext())
-                devSettingDialog.setSetting(IDevBuilderInstance.buildHomeDevMenu(requireContext()) + IDevBuilderInstance.buildTempTest() + randomAvatarDevMenu)
-                setOnClickListener {
-                    devSettingDialog.show()
-                }
-            }
-        }
-
-        val isShowFPS =  IDevBuilderInstance.isShowFps() ?: false
-        binding.testInfo.visibleOrGone(isShowFPS)
-
     }
 
     private fun initRenderer() {
@@ -212,34 +182,17 @@ class FuDemoHomeFragment : Fragment() {
                     }
                 }
 
-                override fun fpsPrint(fps: Double, renderTime: Double) {
-                    lifecycleScope.launchWhenResumed {
-                        binding.testInfo.text = "fps:${fps.format(1)}，renderTime:${renderTime.format(1)}"
-                    }
-                }
+                override fun fpsPrint(fps: Double, renderTime: Double) {}
 
                 override fun onRenderAfter(
                     outputData: FURenderOutputData,
                     drawMatrix: FUDrawFrameMatrix
                 ) {
-                    if (isNeedTakePic) { //截图功能，不需要可去掉
-                        lifecycleScope.launch {
-                            photoRecordUseCase.runCatching {
-                                execute(outputData, PhotoRecordUseCase.Config(drawMatrix.texMatrix, true))
-                            }.onSuccess {
-                                onSaveSnapShotSuccess(it)
-                            }.onFailure {
-                                onSaveSnapShotError(it.toString())
-                            }
-                        }
-                        isNeedTakePic = false
-                    }
                     if (isAvatarExecuteCompleted) {
                         onAvatarShow()
                         isAvatarExecuteCompleted = false
                     }
                 }
-
             })
         }
     }
@@ -356,106 +309,16 @@ class FuDemoHomeFragment : Fragment() {
         })
     }
 
+    private val fuStaViewModel by viewModels<FuStaViewModel>()
+
     private fun onAvatarShow() {
         FuLog.info("Avatar show on screen.")
         isAvatarShow = true
+        fuStaViewModel.auditionVoice("大家好， 欢迎来到乐高app", "Ailun")
+        binding.glTextureView.postDelayed({
+            findNavController().navigate(R.id.interactionFragment)
+        }, 1500)
     }
-
-    //region 截图
-
-    private val photoRecordUseCase by lazy {
-        PhotoRecordUseCase()
-    }
-
-
-    @Volatile
-    private var isNeedTakePic = false
-
-    /**
-     * 截图功能。成功则会调用 [onSaveSnapShotSuccess]，失败则会调用 [onSaveSnapShotError]
-     */
-    private fun saveSnapShotToFile() {
-        isNeedTakePic = true
-    }
-
-
-    private fun onSaveSnapShotSuccess(bitmap: Bitmap) {
-        val cacheImageFile = File(requireContext().externalCacheDir, "cacheImage${System.currentTimeMillis()}.png")
-        cacheImageFile.apply {
-            FUMediaUtils.addBitmapToExternal(path, bitmap, false)
-        }
-
-
-        requireActivity().runOnUiThread {
-            FuDemoShareDialog(requireContext(), bitmap, object : FuDemoShareDialog.OnClickListener {
-                override fun onSaveClick() {
-                    saveBitmapToFile(bitmap)
-                }
-
-                override fun onCopyClick() {
-                    lifecycleScope.launchWhenResumed {
-                        viewModel.uploadCurrentAvatar().collect { avatarIdResult ->
-                            avatarIdResult.onSuccess { avatarId ->
-                                FuDemoCopySuccessDialog(requireContext(), avatarId).show()
-                                fun copy(text: String) {
-                                    val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                    val textCd = ClipData.newPlainText("text", text)
-                                    clipboard.setPrimaryClip(textCd)
-                                }
-                                copy(avatarId)
-                            }.onFailure {
-                                ToastUtils.showFailureToast(requireContext(), it.toString())
-                            }
-                        }
-                    }
-                }
-
-                override fun onSaveQrCodeClick() {
-                    lifecycleScope.launchWhenResumed {
-                        viewModel.buildQrCode(cacheImageFile).onStart {
-                            downloadingDialog.updateText("生成二维码中")
-                            DialogDisplayHelper.show(downloadingDialog)
-                        }.onCompletion {
-                            DialogDisplayHelper.dismiss(downloadingDialog)
-                        }.onEach {
-                            saveQRCodeBitmapToFile(it.bitmap, it.avatarId)
-                        }.catch {
-                            ToastUtils.showFailureToast(requireContext(), "生成二维码异常：$it")
-                        }.collect()
-                    }
-                }
-            }).show()
-        }
-    }
-
-    private fun onSaveSnapShotError(errorMsg: String) {
-        ToastUtils.showFailureToast(requireContext(), errorMsg)
-    }
-
-    /**
-     * 将录制的照片发送到手机 "Pictures/PTAG/" 目录下
-     */
-    private fun saveBitmapToFile(bitmap: Bitmap) {
-        SaveBitmapUseCase(bitmap, "avatar").run {
-            if (this) {
-                ToastUtils.showSuccessToast(requireContext(), "形象已保存至相册！")
-            } else {
-                ToastUtils.showFailureToast(requireContext(), "形象保存失败")
-            }
-        }
-    }
-
-    private fun saveQRCodeBitmapToFile(bitmap: Bitmap, avatarId: String = "") {
-        SaveBitmapUseCase(bitmap, "qrcode-$avatarId").run {
-            if (this) {
-                ToastUtils.showSuccessToast(requireContext(), "二维码已保存至相册！")
-            } else {
-                ToastUtils.showFailureToast(requireContext(), "二维码保存失败")
-            }
-        }
-    }
-
-    //endregion 截图
 
     override fun onDestroyView() {
         super.onDestroyView()

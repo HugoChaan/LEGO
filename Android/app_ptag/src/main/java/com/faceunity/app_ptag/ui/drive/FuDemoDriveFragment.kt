@@ -92,34 +92,34 @@ class FuDemoDriveFragment : Fragment(), KeyboardHeightObserver {
 
         updateFPSInfo()
 
-        ConvertClient.getInstance().init(activity)
-        ConvertClient.getInstance()
-            .setChatGPTListener(object : ConvertListener {
-                override fun onVoice2Text(index: Int, text: String?) {
-                    Log.i("LEGO", "onVoice2Text: text=$text")
-                }
-
-                override fun onText2Voice(index: Int, pcmFilePath: String?) {
-                    Log.i("LEGO", "onText2Voice: pcmFilePath=$pcmFilePath")
-                }
-
-                override fun onQues2AnsSuccess(index: Int, question: String?, answer: String?) {
-                    //问chatGPT回调结果
-                    Log.i("LEGO", "question=$question,answer=$answer")
-                    val ans = answer ?: return
-                    if (FuDevDataCenter.staControl == null) {
-                        ToastUtils.showFailureToast(requireContext(), "未配置语音驱动服务")
-                        return
-                    }
-                    fuStaViewModel.auditionVoice(ans)
-                }
-
-                override fun onFailure(errorCode: Int, message: String?) {
-                    //各种错误回调
-                    Log.i("hugo", "onFailure ,message=$message")
-                }
-            })
-        ConvertClient.getInstance().startVoice2Text()
+//        ConvertClient.getInstance().init(activity)
+//        ConvertClient.getInstance()
+//            .setChatGPTListener(object : ConvertListener {
+//                override fun onVoice2Text(index: Int, text: String?) {
+//                    Log.i("LEGO", "onVoice2Text: text=$text")
+//                }
+//
+//                override fun onText2Voice(index: Int, pcmFilePath: String?) {
+//                    Log.i("LEGO", "onText2Voice: pcmFilePath=$pcmFilePath")
+//                }
+//
+//                override fun onQues2AnsSuccess(index: Int, question: String?, answer: String?) {
+//                    //问chatGPT回调结果
+//                    Log.i("LEGO", "question=$question,answer=$answer")
+//                    val ans = answer ?: return
+//                    if (FuDevDataCenter.staControl == null) {
+//                        ToastUtils.showFailureToast(requireContext(), "未配置语音驱动服务")
+//                        return
+//                    }
+//                    fuStaViewModel.auditionVoice(ans)
+//                }
+//
+//                override fun onFailure(errorCode: Int, message: String?) {
+//                    //各种错误回调
+//                    Log.i("hugo", "onFailure ,message=$message")
+//                }
+//            })
+//        ConvertClient.getInstance().startVoice2Text()
     }
 
     private fun updateFPSInfo() {

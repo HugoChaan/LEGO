@@ -1,7 +1,10 @@
 package com.faceunity.app_ptag.util
 
+import android.app.Application
 import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -69,5 +72,38 @@ object ToastUtils {
             FuLog.warn("showFailureToast error: $ex")
         }
 
+    }
+
+    private var mainHandler: Handler? = null
+
+    fun showToast(context: Context, str: String?) {
+        runOnMainThread {
+            Toast.makeText(
+                context,
+                str,
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    fun showToastLong(context: Context, str: String?) {
+        runOnMainThread {
+            Toast.makeText(
+                context,
+                str,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun runOnMainThread(runnable: Runnable) {
+        if (mainHandler == null) {
+            mainHandler = Handler(Looper.getMainLooper())
+        }
+        if (Thread.currentThread() === mainHandler!!.looper.thread) {
+            runnable.run()
+        } else {
+            mainHandler!!.post(runnable)
+        }
     }
 }

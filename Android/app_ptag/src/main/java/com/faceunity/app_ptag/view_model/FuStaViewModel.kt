@@ -304,14 +304,21 @@ class FuStaViewModel : ViewModel() {
         currentSpeechId = uuid
         staControl.startSpeech(text, inputVoice, id = uuid, speechCallback = object : SpeechCallback {
             override fun onStart(avatar: Avatar?) {
+                avatar?.animationGraph?.switchLogicNode(FULogicNodeSwitchEnum.TALK)
                 _auditionEventLiveData.postValue(AuditionEvent(inputVoice, AuditionEvent.Status.Start))
             }
 
             override fun onCancel(avatar: Avatar?) {
+                if (avatar != null) {
+                    DevSceneManagerRepository.setAvatarDefaultAnimation(avatar, gender)
+                }
                 _auditionEventLiveData.postValue(AuditionEvent(inputVoice, AuditionEvent.Status.Finish))
             }
 
             override fun onFinish(avatar: Avatar?) {
+                if (avatar != null) {
+                    DevSceneManagerRepository.setAvatarDefaultAnimation(avatar, gender)
+                }
                 _auditionEventLiveData.postValue(AuditionEvent(inputVoice, AuditionEvent.Status.Finish))
             }
         })

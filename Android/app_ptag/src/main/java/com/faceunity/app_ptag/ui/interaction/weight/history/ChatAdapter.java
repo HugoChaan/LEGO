@@ -58,6 +58,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.TTsVH> {
             view = layoutInflater.inflate(R.layout.recycler_chat_right, parent, false);
         } else if (viewType == ChatMessage.CHAT_TIME) {
             view = layoutInflater.inflate(R.layout.recycler_chat_time, parent, false);
+        } else if (viewType == ChatMessage.FROM_USER_TO_GPT) {
+            view = layoutInflater.inflate(R.layout.recycler_chat_right_gpt, parent, false);
         } else {
             view = layoutInflater.inflate(R.layout.recycler_chat_empty, parent, false);
         }
@@ -71,7 +73,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.TTsVH> {
             holder.mTextView.setText(ChatMessage.getEmptyMessage().getContent());
         } else {
             ChatMessage chatMessage = mChatMessages.get(position);
-            if (type == ChatMessage.FROM_NLP || type == ChatMessage.FROM_USER) {
+            if (type == ChatMessage.FROM_NLP || type == ChatMessage.FROM_USER || type == ChatMessage.FROM_USER_TO_GPT) {
                 holder.mTextView.setText(chatMessage.getContent().substring(0, Math.min(chatMessage.getContent().length(), 300)));
             } else if (type == ChatMessage.CHAT_TIME) {
                 holder.mTextView.setText(chatMessage.formattedTime());

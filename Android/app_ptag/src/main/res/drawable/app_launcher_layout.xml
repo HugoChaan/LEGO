@@ -3,7 +3,7 @@
     <item>
         <bitmap
             android:gravity="fill"
-            android:src="@drawable/splash_full"
+            android:src="@drawable/lego"
             />
     </item>
 
